@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="632.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.javafx_project.controllers.ProducerController">
+
+    <TableView fx:id="producerTableView" prefHeight="400.0" prefWidth="502.0">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" />
+            <TableColumn fx:id="nameColumn" text="Name" />
+            <TableColumn fx:id="cinColumn" text="CIN" />
+            <TableColumn fx:id="addressColumn" text="Address" />
+            <TableColumn fx:id="phoneNumberColumn" text="Phone Number" />
+            <TableColumn fx:id="editColumn" prefWidth="50" text="Edit">
+                <cellValueFactory>
+                    <PropertyValueFactory property="button" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="deleteColumn" prefWidth="50" text="Delete">
+                <cellValueFactory>
+                    <PropertyValueFactory property="button" />
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <Button layoutX="508.0" layoutY="44.0" onAction="#openProducerForm" styleClass="btn, btn-primary" text="Add new producer">
+        Add new producer
+    </Button>
+    <Button layoutX="508.0" layoutY="353.0" onAction="#handleLogout"  mnemonicParsing="false" prefHeight="25.0" prefWidth="115.0" text="Logout" />
+    <Button layoutX="508.0" layoutY="99.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="115.0" text="Import" onAction="#openImportFile" />
+   <Button layoutX="508.0" layoutY="162.0" onAction="#openExportFile" mnemonicParsing="false" prefHeight="25.0" prefWidth="115.0" text="Export" />
+
+</AnchorPane>

@@ -1,0 +1,4 @@
+Producer{id=1, name='Ahmed', CIN='516', address='jknkd', phoneNumber=4787}
+Producer{id=11, name='kifane', CIN='f66', address='kfkf', phoneNumber=555}
+Producer{id=14, name='Aymen', CIN='548', address='dokdjoid', phoneNumber=5498}
+Producer{id=17, name='test', CIN='test', address='test', phoneNumber=20020}

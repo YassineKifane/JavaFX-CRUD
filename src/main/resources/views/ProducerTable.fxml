@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.javafx_project.controllers.ProducerController">
+    <TableView fx:id="producerTableView" prefWidth="600">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID"/>
+            <TableColumn fx:id="nameColumn" text="Name"/>
+            <TableColumn fx:id="cinColumn" text="CIN"/>
+            <TableColumn fx:id="addressColumn" text="Address"/>
+            <TableColumn fx:id="phoneNumberColumn" text="Phone Number"/>
+        </columns>
+    </TableView>
+</VBox>
