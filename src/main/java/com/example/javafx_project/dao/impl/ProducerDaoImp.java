@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class ProducerDaoImp implements ProducerDao {
     private Connection conn = DB.getConnection();
@@ -210,58 +212,7 @@ public class ProducerDaoImp implements ProducerDao {
     }
 
     @Override
-    public void readFromStyleSheetAndInsertInDatabase(String path) {
-        PreparedStatement ps = null;
-        try (FileInputStream fis = new FileInputStream(new File(path))) {
-            ps = conn.prepareStatement("INSERT INTO producer (Name, CIN, Address, PhoneNumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
-            XSSFWorkbook workbook = new XSSFWorkbook(fis);
-            org.apache.poi.ss.usermodel.Sheet sheet = workbook.getSheetAt(0);
-
-            // Iterate over rows
-            for (Row row : sheet) {
-                // Skip the first row if it contains headers
-                if (row.getRowNum() == 0) {
-                    continue;
-                }
-
-                // Extract data from cells
-                Cell nameCell = row.getCell(1);
-                Cell cinCell = row.getCell(2);
-                Cell addressCell = row.getCell(3);
-                Cell phoneNumberCell = row.getCell(4);
-                System.out.println(nameCell.getStringCellValue());
-
-                // Set values in the prepared statement
-                ps.setString(1, nameCell.getStringCellValue());
-                ps.setString(2, cinCell.getStringCellValue());
-                ps.setString(3, addressCell.getStringCellValue());
-                ps.setInt(4, (int) phoneNumberCell.getNumericCellValue());
-
-                // Execute the insert statement
-                int rowsAffected = ps.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    ResultSet rs = ps.getGeneratedKeys();
-
-                    if (rs.next()) {
-                        int id = rs.getInt(1);
-                        System.out.println("Inserted producer with id: " + id);
-                    }
-                    DB.closeResultSet(rs);
-                } else {
-                    System.out.println("Aucune ligne renvoyée");
-                }
-            }
-
-            workbook.close();
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-            System.err.println("Problème de lecture du fichier Excel ou d'insertion dans la base de données");
-        } finally {
-            DB.closeStatement(ps);
-        }
-    }
 
 
     public void writingOutPut(ObservableList<Producer> list) {
@@ -339,74 +290,6 @@ public class ProducerDaoImp implements ProducerDao {
     }
 
 
-
-
-    public ObservableList<Producer> readFromJsonFile(FileInputStream file) {
-        ObservableList<Producer> list = FXCollections.observableArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/files/inputDataJson.json"))) {
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Producer[] producers = objectMapper.readValue(file, Producer[].class);
-            list.addAll(producers);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public ObservableList<Producer> readFromExcelFile(File file) throws Exception {
-        ObservableList<Producer> list = FXCollections.observableArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/files/producerInfo.xlsx"))) {
-            Workbook workbook = WorkbookFactory.create(file);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            // Read data rows
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0) {
-                    // Skip header row
-                    continue;
-                }
-                int id = (int) row.getCell(0).getNumericCellValue();
-                String name = row.getCell(1).getStringCellValue();
-                String cin = row.getCell(2).getStringCellValue();
-                String address = row.getCell(3).getStringCellValue();
-                int phoneNumber = (int) row.getCell(4).getNumericCellValue();
-
-                Producer producer = new Producer(id, name, cin, address, phoneNumber);
-                list.add(producer);
-            }
-
-            workbook.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-
-    public ObservableList<Producer> readFromTextFile(File file) {
-        ObservableList<Producer> list = FXCollections.observableArrayList();
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/files/inputData.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",");
-                if (values.length == 5) {
-                    int id = Integer.parseInt(values[0]);
-                    String name = values[1];
-                    String cin = values[2];
-                    String address = values[3];
-                    int phoneNumber =Integer.parseInt(values[4]);
-
-                    Producer producer = new Producer(id, name, cin, address, phoneNumber);
-                    list.add(producer);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
     public void readFromTextFileAndInsertInDatabase(String path){
         PreparedStatement ps = null;
         try (BufferedReader br = new BufferedReader(new FileReader(path));) {
@@ -454,6 +337,69 @@ public class ProducerDaoImp implements ProducerDao {
             DB.closeStatement(ps);
         }
     }
+
+
+    public void readFromJsonFileAndInsertInDatabase(String path) {
+
+    }
+
+    public void readFromStyleSheetAndInsertInDatabase(String path) {
+        PreparedStatement ps = null;
+        try (FileInputStream fis = new FileInputStream(new File(path))) {
+            ps = conn.prepareStatement("INSERT INTO producer (Name, CIN, Address, PhoneNumber) " +
+                            "SELECT ?, ?, ?, ? FROM producer WHERE NOT EXISTS " +
+                            "(SELECT 1 FROM producer WHERE CIN = ?) LIMIT 1",
+                    Statement.RETURN_GENERATED_KEYS);
+            XSSFWorkbook workbook = new XSSFWorkbook(fis);
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.getSheetAt(0);
+
+            // Iterate over rows
+            for (Row row : sheet) {
+                // Skip the first row if it contains headers
+                if (row.getRowNum() == 0) {
+                    continue;
+                }
+
+                // Extract data from cells
+                Cell nameCell = row.getCell(0);
+                Cell cinCell = row.getCell(1);
+                Cell addressCell = row.getCell(2);
+                Cell phoneNumberCell = row.getCell(3);
+                System.out.println(nameCell.getStringCellValue());
+
+                // Set values in the prepared statement
+                ps.setString(1, nameCell.getStringCellValue());
+                ps.setString(2, cinCell.getStringCellValue());
+                ps.setString(3, addressCell.getStringCellValue());
+                ps.setInt(4, (int) phoneNumberCell.getNumericCellValue());
+                ps.setString(5, cinCell.getStringCellValue());
+
+                // Execute the insert statement
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    ResultSet rs = ps.getGeneratedKeys();
+
+                    if (rs.next()) {
+                        int id = rs.getInt(1);
+                        System.out.println("Inserted producer with id: " + id);
+                    }
+                    DB.closeResultSet(rs);
+                } else {
+                    System.out.println("Aucune ligne renvoyée");
+                }
+            }
+
+            workbook.close();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            System.err.println("Problème de lecture du fichier Excel ou d'insertion dans la base de données");
+        } finally {
+            DB.closeStatement(ps);
+        }
+    }
+
+
 }
 
 

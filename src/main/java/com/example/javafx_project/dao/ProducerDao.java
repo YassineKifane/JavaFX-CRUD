@@ -24,18 +24,15 @@ public interface ProducerDao {
     void readFromDatabaseToTextFile();
 
     void readFromStyleSheetAndInsertInDatabase(String path);
-    public void readFromTextFileAndInsertInDatabase(String path);
+    void readFromTextFileAndInsertInDatabase(String path);
+    void readFromJsonFileAndInsertInDatabase(String path);
 
     void writingOutPut(ObservableList<Producer> list);
 
     void writingJsonFile(ObservableList<Producer> list);
     void writingExcelFile(ObservableList<Producer> list) throws Exception;
 
-    ObservableList<Producer> readFromJsonFile(FileInputStream file);
 
-    ObservableList<Producer> readFromExcelFile(File file) throws Exception;
-
-    ObservableList<Producer> readFromTextFile(File file);
 
 
 }

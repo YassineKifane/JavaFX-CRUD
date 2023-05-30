@@ -1,17 +1,9 @@
 {"emissionList":[
  {
-  "ID": 1,
-  "Titre": "Marvel",
-  "Date Deffusion": "2020-12-22",
-  "Duree Deffusion": 120,
-  "Genre": "Action"
- },
- {
-  "ID": 1,
-  "Titre": "Thor",
-  "Date Deffusion": "2020-11-20",
-  "Duree Deffusion": 90,
-  "Genre": "Action"
+  "name": "Test",
+  "address": "test",
+  "phoneNumber": 1111,
+  "cin": "Test"
  }
 
 ]

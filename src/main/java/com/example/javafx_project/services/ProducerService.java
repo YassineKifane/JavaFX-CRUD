@@ -36,6 +36,10 @@ public class ProducerService {
         producerDao.readFromTextFileAndInsertInDatabase(path);
     }
 
+    public void readFromJsonFileAndInsertInDatabase(String path){
+        producerDao.readFromJsonFileAndInsertInDatabase(path);
+    }
+
     public void readFromStyleSheetAndInsertInDatabase(String path) {
         producerDao.readFromStyleSheetAndInsertInDatabase(path);
     }
@@ -51,16 +55,6 @@ public class ProducerService {
         producerDao.writingExcelFile(list);
     }
 
-    public List<Producer> readFromTextFile(FileReader fileReader) {
-        return producerDao.readFromTextFile(fileReader);
-    }
 
-    public List<Producer> readFromJsonFile(FileInputStream fileInputStream) {
-        return producerDao.readFromJsonFile(fileInputStream);
-    }
-
-    public List<Producer> readFromExcelFile(File file) throws Exception {
-        return producerDao.readFromExcelFile(file);
-    }
 
 }

@@ -42,35 +42,12 @@ public class ImportController implements Initializable {
 
     @FXML
     private void importJsonFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new ExtensionFilter("JSON Files", "*.json"));
-        File file = fileChooser.showOpenDialog(null);
-        if (file != null) {
-            try {
-                FileInputStream inputStream = new FileInputStream(file);
-                List<Producer> producers = producerService.readFromJsonFile(inputStream);
-                // Process the imported producers as needed
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
+        producerService.readFromJsonFileAndInsertInDatabase("ee");
     }
 
     @FXML
     private void importExcelFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new ExtensionFilter("Excel Files", "*.xlsx"));
-        File file = fileChooser.showOpenDialog(null);
-        if (file != null) {
-            try {
-                List<Producer> producers = producerService.readFromExcelFile(file);
-                // Process the imported producers as needed
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+        producerService.readFromStyleSheetAndInsertInDatabase("src/main/resources/files/producerInfo.xlsx");
     }
 
     public void setProducerService(ProducerService producerService) {
