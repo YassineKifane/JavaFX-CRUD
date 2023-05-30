@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class ProducerDaoImp implements ProducerDao {
     private Connection conn = DB.getConnection();
@@ -293,7 +295,10 @@ public class ProducerDaoImp implements ProducerDao {
     public void readFromTextFileAndInsertInDatabase(String path){
         PreparedStatement ps = null;
         try (BufferedReader br = new BufferedReader(new FileReader(path));) {
-            ps = conn.prepareStatement("INSERT INTO producer (Name, CIN, Address, PhoneNumber) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps = conn.prepareStatement("INSERT INTO producer (Name, CIN, Address, PhoneNumber) " +
+                            "SELECT ?, ?, ?, ? FROM producer WHERE NOT EXISTS " +
+                            "(SELECT 1 FROM producer WHERE CIN = ?) LIMIT 1",
+                    Statement.RETURN_GENERATED_KEYS);
             String readLine = br.readLine();
             Producer c = null;
             while(readLine != null){
@@ -311,6 +316,7 @@ public class ProducerDaoImp implements ProducerDao {
                 ps.setString(2,b);
                 ps.setString(3,d);
                 ps.setInt(4, e);
+                ps.setString(5, b);
                 readLine = br.readLine();
             }
 
@@ -340,8 +346,58 @@ public class ProducerDaoImp implements ProducerDao {
 
 
     public void readFromJsonFileAndInsertInDatabase(String path) {
+        PreparedStatement ps = null;
+        JSONParser parser = new JSONParser();
+        try (FileReader fileReader = new FileReader(path)) {
+            ps = conn.prepareStatement("INSERT INTO producer (Name, CIN, Address, PhoneNumber) " +
+                            "SELECT ?, ?, ?, ? FROM producer WHERE NOT EXISTS " +
+                            "(SELECT 1 FROM producer WHERE CIN = ?) LIMIT 1",
+                    Statement.RETURN_GENERATED_KEYS);
 
+            Object obj = parser.parse(fileReader);
+            JSONArray jsonArray = (JSONArray) obj;
+
+            for (Object jsonObj : jsonArray) {
+                JSONObject jsonProducer = (JSONObject) jsonObj;
+
+                String name = (String) jsonProducer.get("name");
+                String address = (String) jsonProducer.get("address");
+                String cin = (String) jsonProducer.get("cin");
+                int phoneNumber = ((Long) jsonProducer.get("phoneNumber")).intValue();
+
+                ps.setString(1, name);
+                ps.setString(2, cin);
+                ps.setString(3, address);
+                ps.setInt(4, phoneNumber);
+                ps.setString(5, cin);
+
+                // Execute the insert statement
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    ResultSet rs = ps.getGeneratedKeys();
+
+                    if (rs.next()) {
+                        int id = rs.getInt(1);
+                        System.out.println("Inserted producer with id: " + id);
+                    }
+                    DB.closeResultSet(rs);
+                } else {
+                    System.out.println("Aucune ligne renvoyée");
+                }
+            }
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            System.err.println("Problème de lecture du fichier Excel ou d'insertion dans la base de données");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        } finally {
+            DB.closeStatement(ps);
+        }
     }
+
+
+
 
     public void readFromStyleSheetAndInsertInDatabase(String path) {
         PreparedStatement ps = null;

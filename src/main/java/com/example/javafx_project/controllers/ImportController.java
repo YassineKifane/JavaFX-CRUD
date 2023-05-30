@@ -42,7 +42,7 @@ public class ImportController implements Initializable {
 
     @FXML
     private void importJsonFile() {
-        producerService.readFromJsonFileAndInsertInDatabase("ee");
+        producerService.readFromJsonFileAndInsertInDatabase("src/main/resources/files/inputDataJson.json");
     }
 
     @FXML

@@ -1,10 +1,7 @@
-{"emissionList":[
- {
-  "name": "Test",
-  "address": "test",
-  "phoneNumber": 1111,
-  "cin": "Test"
- }
-
-]
+[{
+ "name": "John Doe",
+ "address": "123 Main Street",
+ "cin": "ABC123",
+ "phoneNumber": 123456789
 }
+]
