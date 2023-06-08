@@ -218,10 +218,10 @@ public class ProducerDaoImp implements ProducerDao {
 
 
     public void writingOutPut(ObservableList<Producer> list) {
-        try( FileOutputStream fout = new FileOutputStream("src/main/resources/files/outputData.txt"))
+        try( FileWriter fout = new FileWriter("src/main/resources/files/outputData.txt"))
         {
             for(Producer producer : list){
-                fout.write(producer.toString().getBytes());
+                fout.write(String.valueOf(producer));
                 fout.write('\n');
 
             }

@@ -1,3 +1,8 @@
 Producer{id=1, name='Ahmed', CIN='516', address='jknkd', phoneNumber=4787}
 Producer{id=14, name='Aymen', CIN='548', address='dokdjoid', phoneNumber=5498}
 Producer{id=17, name='test', CIN='test', address='test', phoneNumber=20020}
+Producer{id=44, name='Kifane', CIN='123', address='test', phoneNumber=123}
+Producer{id=45, name='Aymen', CIN='2992', address='test', phoneNumber=1223}
+Producer{id=46, name='John Doe', CIN='ABC1', address='123 Main Street', phoneNumber=123456789}
+Producer{id=47, name='Test2', CIN='Test2', address='Test2', phoneNumber=11}
+Producer{id=48, name='Test3', CIN='T', address='testzka', phoneNumber=2}
